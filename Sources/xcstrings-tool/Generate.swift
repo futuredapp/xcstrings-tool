@@ -30,6 +30,15 @@ struct Generate: ParsableCommand {
     // MARK: - Program
     
     func run() throws {
+        guard let input else {
+            throw NSError(domain: "com.example.xcstrings-tool", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing input file"])
+        }
+        guard let output else {
+            throw NSError(domain: "com.example.xcstrings-tool", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing output file"])
+        }
+        guard let tableName else {
+            throw NSError(domain: "com.example.xcstrings-tool", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing table name"])
+        }
         // Load the source ensuring that errors are thrown in a diagnostic format for the input
         let source = try withThrownErrorsAsDiagnostics(at: input) {
             // Load the String Catalog file
@@ -61,8 +70,11 @@ struct Generate: ParsableCommand {
         }
     }
 
-    var tableName: String {
-        input.lastPathComponent.replacingOccurrences(of: ".\(input.pathExtension)", with: "")
+    var tableName: String? {
+        guard let input = input else { 
+            return nil 
+        }
+        return input.lastPathComponent.replacingOccurrences(of: ".\(input.pathExtension)", with: "")
     }
 
     var resolvedAccessLevel: StringGenerator.AccessLevel {
